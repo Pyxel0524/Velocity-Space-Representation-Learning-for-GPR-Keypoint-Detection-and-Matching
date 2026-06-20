@@ -1,0 +1,5 @@
+1、运行test_vis_feature.py能够可视化图片的特征点位置
+2、运行test_image.py还能出来flops和params参数
+3、export.py来输出保存usp文件,用来评估得跑export4eval.py
+4、eval用于评估单个模型和eval_loop用于多个模型循环评估
+5、

@@ -1,0 +1,106 @@
+MIT_data:
+    data_name: 'GROUNDED'
+    data_path: 'F:/data/Registration/MultiVelocity/MIT'
+    truncate: 1.0
+    export_size: 320
+    seq_len: 300
+    stride: 150
+    IMAGE_SHAPE: [240, 320]
+    batch_size: 1
+    train_name: ['Route_4']
+    test_name: ['Route_1','Route_5']
+    LR: 0.01
+
+
+CMU_data:
+    data_name: 'CMU'
+    data_path: 'F:/data/Registration/MultiVelocity/CMU/Train'
+    truncate: 1.0
+    stride: 150
+    IMAGE_SHAPE: [240, 320]
+    batch_size: 2
+    train_name: 'Train'
+    LR: 0.01
+
+NUDT_data:
+    data_name: 'NUDT'
+    data_path: 'F:/data/Registration/MultiVelocity/NUDT'
+    truncate: 1.0
+    stride: 150
+    IMAGE_SHAPE: [240, 320]
+    batch_size: 2
+    train_name: 'Route_2'
+    LR: 0.01
+
+Evaluate_MIT:
+    data_name: 'GROUNDED'
+    data_path: 'F:/data/Registration/MIT/Route_1'
+    truncate: 1.0
+    export_size: 320
+    seq_len: 300
+    stride: 30
+    IMAGE_SHAPE: [ 240, 320 ]
+    map_name: 'run_0076'
+    query_name: 'run_0038'
+    keypoint_num: 50
+    inlier_thre: 1.0  #route_5: 1.0, RANSAC:4个点; route_1: 1.0, RANSAC: 6个点
+    regist_thre: 3.0
+    repeat_thre: 1.0 # CMU: 1.0, MIT: 1.0
+
+Evaluate_NUDT:
+    data_name: 'NUDT'
+    data_path: 'F:/data/Registration/NUDT/Route_3'
+    truncate: 1.0
+    export_size: 320
+    seq_len: 300
+    stride: 30
+    IMAGE_SHAPE: [ 240, 320 ]
+    map_name: 'run_0010'
+    query_name: 'run_0011'
+    keypoint_num: 50
+    inlier_thre: 0.5
+    regist_thre: 1.0
+    repeat_thre: 0.5
+
+Evaluate_CMU:
+    data_name: 'CMU'
+    data_path:  'F:/data/Registration/MultiVelocity/CMU/Test'
+    IMAGE_SHAPE: [ 240, 320 ]
+    map_name: 'Map'
+    query_name: 'Query'
+    keypoint_num: 50
+    inlier_thre: 10
+    regist_thre: 1.0
+    repeat_thre: 15.0
+
+
+MODEL:
+    name: 'Unsuper'
+    L2_norm: True
+    OPTIMIZATION:
+        name: 'sgd'
+        LR: 0.01
+        weight_decay: 0.0001
+        decay_step_list: [0.4, 0.6, 0.8]
+        LR_decay: 0.1
+        LR_clip: 0.000001
+        LR_warmup: True
+        WARMUP_EPOCH: 4
+        div_factors: 100
+        EPOCHS: 40
+        GRAD_NORM_CLIP: 10
+    LOSS:
+        usp: 1.0 # 1.0
+        uni_xy: 0.10
+        desc: 0.5
+        decorr: 0.15 # 0.15
+        struct: 2.0 # 2.0
+    downsample: 4
+    correspond: 4
+    position_weight: 1.0
+    score_weight: 4.0
+    rep_weight: 2.0
+    m_p: 1.0
+    m_n: 0.2
+    d: 1.0
+    mask_th: 0.1
