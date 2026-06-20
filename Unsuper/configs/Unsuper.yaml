@@ -1,6 +1,6 @@
 MIT_data:
     data_name: 'GROUNDED'
-    data_path: 'F:/data/Registration/MultiVelocity/MIT'
+    data_path: '../data/Registration/MultiVelocity/MIT'
     truncate: 1.0
     export_size: 320
     seq_len: 300
@@ -14,7 +14,7 @@ MIT_data:
 
 CMU_data:
     data_name: 'CMU'
-    data_path: 'F:/data/Registration/MultiVelocity/CMU/Train'
+    data_path: '../data/Registration/MultiVelocity/CMU/Train'
     truncate: 1.0
     stride: 150
     IMAGE_SHAPE: [240, 320]
@@ -24,7 +24,7 @@ CMU_data:
 
 NUDT_data:
     data_name: 'NUDT'
-    data_path: 'F:/data/Registration/MultiVelocity/NUDT'
+    data_path: '../data/Registration/MultiVelocity/NUDT'
     truncate: 1.0
     stride: 150
     IMAGE_SHAPE: [240, 320]
@@ -34,7 +34,7 @@ NUDT_data:
 
 Evaluate_MIT:
     data_name: 'GROUNDED'
-    data_path: 'F:/data/Registration/MIT/Route_1'
+    data_path: '../data/Registration/MIT/Route_1'
     truncate: 1.0
     export_size: 320
     seq_len: 300
@@ -49,7 +49,7 @@ Evaluate_MIT:
 
 Evaluate_NUDT:
     data_name: 'NUDT'
-    data_path: 'F:/data/Registration/NUDT/Route_3'
+    data_path: '../data/Registration/NUDT/Route_3'
     truncate: 1.0
     export_size: 320
     seq_len: 300
@@ -64,7 +64,7 @@ Evaluate_NUDT:
 
 Evaluate_CMU:
     data_name: 'CMU'
-    data_path:  'F:/data/Registration/MultiVelocity/CMU/Test'
+    data_path:  '../data/Registration/MultiVelocity/CMU/Test'
     IMAGE_SHAPE: [ 240, 320 ]
     map_name: 'Map'
     query_name: 'Query'
