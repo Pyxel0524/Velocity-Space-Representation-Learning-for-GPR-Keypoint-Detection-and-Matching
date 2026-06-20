@@ -9,7 +9,7 @@
 
 This repository provides a complete pipeline for unsupervised learning of robust keypoint detectors and descriptors tailored for **Ground Penetrating Radar (GPR)** imagery. By operating in the velocity space, our method achieves superior repeatability and matching accuracy under challenging subsurface conditions.
 
-![Demo Animation](figs/demo.mp4)
+![Demo Animation](figs/demo.gif)
 
 
 ## 📁 Repository Structure
