@@ -264,10 +264,6 @@ class UnSuperPoint(ModelTemplate):
         else:
             loss_item.append(0.)
 
-        print('usp_loss: %f,uni_xy_loss: %f, desc_loss: %f, decorr_loss: %f, struct_loss: %f' %
-                  (usp_loss, uni_xy_loss, decorr_loss, decorr_loss, struct_loss))
-        print('usp_loss: %f,uni_xy_loss: %f, desc_loss: %f, decorr_loss: %f' %
-                  (usp_loss, uni_xy_loss, decorr_loss, decorr_loss))
         return batch_loss, np.array(loss_item)
 
 
