@@ -91,26 +91,16 @@ class UnSuperPoint(ModelTemplate):
             background_remove_mask
         """
 
-        # 将像素值量化成整数bin
         bin_indices = (echoes * (bins - 1)).long().clamp(0, bins - 1)  # (H, W)
-        # 创建 mask 空间
         B, C, D, A = echoes.shape
         BG_mask = torch.ones_like(echoes[0,0])
 
         for col in range(A):
-            # 当前列所有像素的 bin 值
             col_vals = echoes[B-1,C-1,:,col]
-            # 统计频次
             hist = torch.histc(echoes[B-1,C-1,:,col], bins=bins, min=0.0, max=1.0)
             mode_bin = torch.argmax(hist)
-            # 将主模态对应的像素值反算回强度值
             mode_val = mode_bin.float() / (bins - 1)
-            # 构造 mask：保留不在 mode_val ± margin 范围内的值
             BG_mask[:, col] = (col_vals > (mode_val + margin)).float()
-        # import matplotlib.pyplot as plt
-        # plt.figure(); plt.imshow(BG_mask.detach().cpu().numpy())
-        # plt.figure(); plt.imshow(echoes[0,0].detach().cpu().numpy());
-        # plt.show()
 
         return BG_mask.squeeze()
 
@@ -210,24 +200,16 @@ class UnSuperPoint(ModelTemplate):
         B, C, H, W = a.unsqueeze(0).shape
 
         #-----------通过熵构建mask----------#
-        # 计算归一化熵图
         entropy_a = self.entropy_map(a.unsqueeze(0)).view(B, C, H, W)
-        # entropy_a = self.mask(a.unsqueeze(0)).view(B, C, H, W)
         entropy_a = F.interpolate(entropy_a, size=(int(H / self.downsample), int(W / self.downsample)),
                                     mode='bilinear', align_corners=False)
         ind_a = (entropy_a.reshape(-1) > self.t)
 
         entropy_b = self.entropy_map(b.unsqueeze(0),kernel_size=5).view(B, C, H, W)
-        # entropy_b = self.mask(b.unsqueeze(0)).view(B, C, H, W)
         entropy_b = F.interpolate(entropy_b, size=(int(H / self.downsample), int(W / self.downsample)),
                                     mode='bilinear', align_corners=False)
         ind_b = (entropy_b.reshape(-1) > self.t)
-        # import matplotlib.pyplot as plt;
-        # plt.figure();plt.imshow((entropy_a[0,0]).detach().cpu().numpy());
-        # plt.figure();plt.imshow((entropy_b[0,0]).detach().cpu().numpy());
-        # plt.show()
 
-        #-----------通过熵构建mask----------#
 
         if self.usp >= 0:
             usp_loss = self.usp * self.usp_loss(a_s, b_s, key_dist)
@@ -362,14 +344,7 @@ class UnSuperPoint(ModelTemplate):
         pos = (dis <= 8) & mask
         neg = (dis > 8) & mask
         ab = torch.mm(reshape_da, reshape_db)  # p c * c p -> p p
-        # import matplotlib.pyplot as plt
-        # plt.figure()
-        # plt.imshow(pos.detach().cpu().numpy())
-        # plt.show()
-        # 监督图a和图b的相同位置生成相似的描述子
-        # margin loss
-        # pos = min(ab[pos]) neg = max(ab[neg])
-        # loss = max(0, m + (neg - pos))
+
         margin_loss = (self.m_p - self.m_n) + torch.max(ab[neg]) - torch.min(ab[pos])
         margin_loss = torch.clamp(margin_loss, min=0.0)
 
@@ -395,34 +370,22 @@ class UnSuperPoint(ModelTemplate):
         return loss
 
     def struct_loss(self, entropy_map, score_map, high_thr=0.25, low_thr=0.1): # MIT: 0.4, 0.2
-        # import matplotlib.pyplot as plt;plt.figure();plt.imshow(high_mask[0,0].detach().cpu().numpy())
-        # plt.figure();plt.imshow(entropy_map[0,0].detach().cpu().numpy(),cmap = 'jet')
-        # plt.figure();plt.imshow(score_map[0,0].detach().cpu().numpy(),cmap = 'jet')
-        # plt.show()
+
         score_map = score_map.unsqueeze(0)
 
-        # 结构掩膜（高熵区域）
         high_mask = (entropy_map > high_thr).float()
-        # 背景掩膜（低熵区域）
         low_mask = (entropy_map < low_thr).float()
-        # 结构区域 loss：score 应该和熵一致（MSE/L1）
         structure_loss = F.mse_loss(score_map * high_mask, entropy_map * high_mask)
-        # 背景区域 loss：score 应该趋近于 0
         suppress_loss = F.l1_loss(score_map * low_mask, torch.zeros_like(score_map))
-        # 总损失 = 结构对齐 + 背景抑制
         total_loss = 2* structure_loss + suppress_loss
         return total_loss
 
     def get_r_b(self, reshape_d):
         f, p = reshape_d.shape
 
-        # 监督不同位置描数子整体相关性, -1~1 -> 0~2,
         rs = torch.mm(reshape_d.transpose(1, 0), reshape_d) + 1
         ys = rs - 2 * torch.eye(p, device=reshape_d.device)
-        # import matplotlib.pyplot as plt
-        # plt.figure()
-        # plt.imshow(rs.detach().cpu().numpy())
-        # plt.show()
+
         loss = torch.mean(ys)
 
         return loss
@@ -430,7 +393,6 @@ class UnSuperPoint(ModelTemplate):
     def predict(self, img):
         s1, p1, d1 = self.forward(img)
         batch_size = s1.shape[0]
-        # position1 = self.get_batch_position(p1)
         position1 = self.get_position(p1, self.cell, self.downsample)
         position1 = position1.reshape((batch_size, 2, -1)).permute(0, 2, 1)  # B * (HW) * 2
         s1 = s1.reshape((batch_size, -1))
